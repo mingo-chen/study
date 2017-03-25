@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>JMockit Coverage Report - Elevator.java</title>
+  <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
+  <link rel='stylesheet' type='text/css' href='../../../../coverage.css'/>
+  <link rel='shortcut icon' type='image/png' href='../../../../logo.png'/>
+  <script type='text/javascript' src='../../../../coverage.js'></script>
+  <script type='text/javascript' src='../../../../prettify.js'></script>
+</head>
+<body onload='prettyPrint()'>
+  <table cellpadding='0' cellspacing='1'>
+    <caption>study-rxjava/src/main/java/cm/study/rxjava/eds/Elevator.java</caption>
+    <tr>
+      <td class='line'>1</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>package cm.study.rxjava.eds;</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'></td><td>&nbsp;</td>
+      <td><pre class='imports prettyprint' onclick='showHideLines(this)'><div>import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+</div><span>import ...</span></pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'></td><td>&nbsp;</td>
+      <td class='comment' onclick='showHideLines(this)'><div>/**
+ * 电梯对象
+ * 对于电梯而言, 人可分为两类
+ * 一类是处于里面乘坐的人群
+ * 一类是在外等待的人群
+ *
+ * 默认电梯是处于一楼
+ * 当来一个人后, 调度系统询问每台电梯, 最快到达指定楼层的时间, 选择最快的一台电梯做为最佳电梯
+ * 把该人放到指定队列
+ *
+ * Created by chenming on 2017/2/26.
+ */</div><span>/*...*/</span></td>
+    </tr>
+    <tr>
+      <td class='line'>22</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>public class Elevator extends Thread {</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>24</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l24s0'>    private static final Logger ILOG = LoggerFactory.getLogger( Elevator.class );</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>26</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    public static final int MAX_CAPCITY = 1200;</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>28</td><td>&nbsp;</td>
+      <td><pre class='comment'>    /** 电梯通过每层楼的时间, 单位秒 */</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>29</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    private int <span class='instance uncovered' title='Reads: 0 Writes: 0'>speed</span>;</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>31</td><td>&nbsp;</td>
+      <td><pre class='comment'>    /** 总楼层 */</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>32</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    private int <span class='instance uncovered' title='Reads: 0 Writes: 0'>totalFloor</span>;</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>34</td><td>&nbsp;</td>
+      <td><pre class='comment'>    /** 电梯调度系统 */</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>35</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    private DispatchSystem <span class='instance uncovered' title='Reads: 0 Writes: 0'>context</span>;</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>37</td><td>&nbsp;</td>
+      <td><pre class='comment'>    /** 当前承重 */</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>38</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    private volatile int <span class='instance uncovered' title='Reads: 0 Writes: 0'>capcity</span>;</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>40</td><td>&nbsp;</td>
+      <td><pre class='comment'>    /** 运行方向, true向上, false向下 */</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>41</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    private volatile boolean <span class='instance uncovered' title='Reads: 0 Writes: 0'>direction</span>;</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>43</td><td>&nbsp;</td>
+      <td><pre class='comment'>    /** 当前楼层 */</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>44</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    private volatile int <span class='instance uncovered' title='Reads: 0 Writes: 0'>floor</span>;</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'></td><td>&nbsp;</td>
+      <td class='comment' onclick='showHideLines(this)'><div>    /**
+     * 电梯状态
+     * 0 -> 停止
+     * 1 -> 运行中
+     * 2 -> 开门
+     * 3 -> 关门
+     * -1 -> 故障
+     */</div><span>    /*...*/</span></td>
+    </tr>
+    <tr>
+      <td class='line'>54</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    private volatile int <span class='instance uncovered' title='Reads: 0 Writes: 0'>status</span>;</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>56</td><td>&nbsp;</td>
+      <td><pre class='comment'>    /** 最新要求的到达楼层 */</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>57</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    private volatile int <span class='instance uncovered' title='Reads: 0 Writes: 0'>lastestToFloor</span>;</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>59</td><td>&nbsp;</td>
+      <td><pre class='comment'>    /** 最新请求的楼层 */</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>60</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    private volatile int <span class='instance uncovered' title='Reads: 0 Writes: 0'>lastestCallFloor</span>;</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>62</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l62s0'>    public List&lt;People> <span class='instance uncovered' title='Reads: 0 Writes: 0'>passengers</span> = new ArrayList&lt;>();</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>64</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l64s0'>    public Elevator(String name, int speed, int totalFloor) {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>65</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l65s0'>        super.setName(name);</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>66</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l66s0'>        this.speed = speed;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>67</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l67s0'>        this.totalFloor = totalFloor;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>68</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l68s0'>        this.capcity = 0;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>69</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l69s0'>        this.floor = 1; // 默认都是处于1层</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>70</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l70s0'>        this.direction = true; // 在1层, 当然是向上</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>71</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l71s0'>    }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>73</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    @Override</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>74</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    public void run() {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>75</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>        for(;;) {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>76</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>            <span id='l76s0' title='Executions: 0' class='uncovered'>if(status != 0)</span> <span id='l76s1' title='Executions: 0' class='uncovered'>{</span></pre></td>
+    </tr>
+    <tr>
+      <td class='line'>77</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l77s0'>                boolean openDoor = isNeedOpenDoor();</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>78</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>                <span id='l78s0' title='Executions: 0' class='uncovered'>if(openDoor)</span> <span id='l78s1' title='Executions: 0' class='uncovered'>{</span></pre></td>
+    </tr>
+    <tr>
+      <td class='line'>79</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l79s0'>                    ILOG.info("[{}]打开电梯门...", getName());</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>81</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l81s0'>                    out();</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>83</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l83s0'>                    in();</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>84</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l84s0'>                    ILOG.info("[{}]关闭电梯门...", getName());</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>85</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>                }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>87</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l87s0'>                move();</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>88</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l88s0'>            } else {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>89</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l89s0'>                EdsUtils.sleep(100);</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>91</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>            }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>93</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l93s0'>            if(status == 0) {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>94</td><td>&nbsp;</td>
+      <td><pre class='comment'>//                ILOG.debug("电梯处于静止状态, name:{}", name);</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>95</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>            } else {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>96</td><td>&nbsp;</td>
+      <td><pre class='comment'>//                ILOG.info("电梯运行状态, name:{}, status:{}, floor:{}, direction:{}, capcity:{}", getName(), status, floor, direction, capcity);</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>97</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>            }</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>98</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>        }</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>99</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>101</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    boolean isNeedOpenDoor() {</pre></td>
+    </tr>
+    <tr>
+      <td></td><td class='count'>0</td>
+      <td class='paths'>
+        <span style='cursor:default; background-color:#ff0000' onclick='hidePath()'>Path coverage: 0/15</span>
+        <span class='uncovered' onclick="showPath(this,'l102s0 l102s1 l103s0 l104s0')">A: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l102s0 l108s0 l109s0')">B: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l102s0 l102s1 l103s0 l106s0 l108s0 l109s0')">C: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l102s0 l108s0 l112s0 l112s2 l112s3 l113s0 l113s1 l114s0 l115s0')">D: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l102s0 l108s0 l112s0 l112s1 l112s3 l113s0 l113s1 l114s0 l115s0')">E: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l102s0 l102s1 l103s0 l106s0 l108s0 l112s0 l112s2 l112s3 l113s0 l113s1 l114s0 l115s0')">F: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l102s0 l102s1 l103s0 l106s0 l108s0 l112s0 l112s1 l112s3 l113s0 l113s1 l114s0 l115s0')">G: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l102s0 l108s0 l112s0 l112s2 l112s3 l113s0 l119s0')">H: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l102s0 l108s0 l112s0 l112s2 l112s3 l113s0 l113s1 l114s0 l117s0 l119s0')">I: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l102s0 l108s0 l112s0 l112s1 l112s3 l113s0 l119s0')">J: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l102s0 l108s0 l112s0 l112s1 l112s3 l113s0 l113s1 l114s0 l117s0 l119s0')">K: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l102s0 l102s1 l103s0 l106s0 l108s0 l112s0 l112s2 l112s3 l113s0 l119s0')">L: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l102s0 l102s1 l103s0 l106s0 l108s0 l112s0 l112s2 l112s3 l113s0 l113s1 l114s0 l117s0 l119s0')">M: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l102s0 l102s1 l103s0 l106s0 l108s0 l112s0 l112s1 l112s3 l113s0 l119s0')">N: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l102s0 l102s1 l103s0 l106s0 l108s0 l112s0 l112s1 l112s3 l113s0 l113s1 l114s0 l117s0 l119s0')">O: 0</span>
+      </td>
+    </tr>
+    <tr>
+      <td class='line'>102</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>        <span id='l102s0' title='Executions: 0' class='uncovered'>for(People people</span> : <span id='l102s1' title='Executions: 0' class='uncovered'>passengers)</span> </pre></td>
+    </tr>
+    <tr>
+      <td class='line'>103</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>            <span id='l103s0' title='Executions: 0' class='uncovered'>if(people.getTargetFloor() == floor) {</span></pre></td>
+    </tr>
+    <tr>
+      <td class='line'>104</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l104s0'>                return true;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>105</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>            }</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>106</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l106s0'>        }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>108</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>        <span id='l108s0' title='Executions: 0' class='uncovered'>if(capcity >= MAX_CAPCITY * 0.9)</span> <span id='l108s1' title='Executions: 0' class='uncovered'>{</span></pre></td>
+    </tr>
+    <tr>
+      <td class='line'>109</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l109s0'>            return true;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>110</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>        }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>112</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>        <span id='l112s0' title='Executions: 0' class='uncovered'>List&lt;People>  waitPeoples = direction? context.getUp_wait_peoples()</span> : <span id='l112s1' title='Executions: 0' class='uncovered'>context.getDown_wait_peoples();</span></pre></td>
+    </tr>
+    <tr>
+      <td class='line'>113</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>        <span id='l113s0' title='Executions: 0' class='uncovered'>for(People people</span> : <span id='l113s1' title='Executions: 0' class='uncovered'>waitPeoples)</span> </pre></td>
+    </tr>
+    <tr>
+      <td class='line'>114</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>            <span id='l114s0' title='Executions: 0' class='uncovered'>if(people.getStartFloor() == floor) {</span></pre></td>
+    </tr>
+    <tr>
+      <td class='line'>115</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l115s0'>                return true;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>116</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>            }</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>117</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l117s0'>        }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>119</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l119s0'>        return false;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>120</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>122</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    void out() {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>123</td><td>&nbsp;</td>
+      <td><pre class='comment'>        // 每到一层, 检查下, 有无人下</pre></td>
+    </tr>
+    <tr>
+      <td></td><td class='count'>0</td>
+      <td class='paths'>
+        <span style='cursor:default; background-color:#ff0000' onclick='hidePath()'>Path coverage: 0/3</span>
+        <span class='uncovered' onclick="showPath(this,'l124s0 l134s0')">A: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l124s0 l125s0 l126s0 l132s0 l134s0')">B: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l124s0 l125s0 l126s0 l127s0 l132s0 l134s0')">C: 0</span>
+      </td>
+    </tr>
+    <tr>
+      <td class='line'>124</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>        <span id='l124s0' title='Executions: 0' class='uncovered'>for (Iterator&lt;People> it = passengers.iterator(); it.hasNext(); ) {</span></pre></td>
+    </tr>
+    <tr>
+      <td class='line'>125</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l125s0'>            People people = it.next();</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>126</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>            <span id='l126s0' title='Executions: 0' class='uncovered'>if (people.getTargetFloor() == floor) {</span></pre></td>
+    </tr>
+    <tr>
+      <td class='line'>127</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l127s0'>                people.outElevator();</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>128</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l128s0'>                capcity -= people.getWeight();</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>129</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l129s0'>                it.remove();</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>130</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l130s0'>                ILOG.info("有人出电梯, 当前乘客数:{}, 重量:{}, floor:{}", passengers.size(), capcity, floor);</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>131</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>            }</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>132</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l132s0'>        }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>134</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l134s0'>    }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>136</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    void in() {</pre></td>
+    </tr>
+    <tr>
+      <td></td><td class='count'>0</td>
+      <td class='paths'>
+        <span style='cursor:default; background-color:#ff0000' onclick='hidePath()'>Path coverage: 0/9</span>
+        <span class='uncovered' onclick="showPath(this,'l137s0 l139s0 l140s0')">A: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l137s0 l143s0 l143s2 l143s3 l145s0 l161s0')">B: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l137s0 l143s0 l143s2 l143s3 l145s0 l146s0 l147s0 l160s0 l161s0')">C: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l137s0 l143s0 l143s2 l143s3 l145s0 l146s0 l147s0 l147s1 l160s0 l161s0')">D: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l137s0 l143s0 l143s2 l143s3 l145s0 l146s0 l147s0 l147s1 l149s0 l158s0 l160s0 l161s0')">E: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l137s0 l143s0 l143s1 l143s3 l145s0 l161s0')">F: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l137s0 l143s0 l143s1 l143s3 l145s0 l146s0 l147s0 l160s0 l161s0')">G: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l137s0 l143s0 l143s1 l143s3 l145s0 l146s0 l147s0 l147s1 l160s0 l161s0')">H: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l137s0 l143s0 l143s1 l143s3 l145s0 l146s0 l147s0 l147s1 l149s0 l158s0 l160s0 l161s0')">I: 0</span>
+      </td>
+    </tr>
+    <tr>
+      <td class='line'>137</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>        <span id='l137s0' title='Executions: 0' class='uncovered'>if (capcity >= MAX_CAPCITY*0.9)</span> <span id='l137s1' title='Executions: 0' class='uncovered'>{</span></pre></td>
+    </tr>
+    <tr>
+      <td class='line'>138</td><td>&nbsp;</td>
+      <td><pre class='comment'>            // 如果没有人下, 且电梯承载已大最大, 直接Pass</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>139</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l139s0'>            ILOG.warn("电梯已达饱和, 跳过此层! floor:{}, capcity:{}", floor, capcity);</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>140</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l140s0'>            return;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>141</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>        }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>143</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>        <span id='l143s0' title='Executions: 0' class='uncovered'>List&lt;People>  waitPeoples = direction? context.getUp_wait_peoples()</span> : <span id='l143s1' title='Executions: 0' class='uncovered'>context.getDown_wait_peoples();</span></pre></td>
+    </tr>
+    <tr>
+      <td class='line'>144</td><td>&nbsp;</td>
+      <td><pre class='comment'>        // 如果还有空间, 则问调度系统有无等待人群</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>145</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>        <span id='l145s0' title='Executions: 0' class='uncovered'>for(Iterator&lt;People> it = waitPeoples.iterator(); it.hasNext();) {</span></pre></td>
+    </tr>
+    <tr>
+      <td class='line'>146</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l146s0'>            People people = it.next();</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>147</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>            <span id='l147s0' title='Executions: 0' class='uncovered'>if(people.getStartFloor() == floor</span> && <span id='l147s1' title='Executions: 0' class='uncovered'>people.getWeight() + capcity &lt; MAX_CAPCITY) {</span></pre></td>
+    </tr>
+    <tr>
+      <td class='line'>148</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>                try {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>149</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l149s0'>                    people.inElevator(this);</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>150</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l150s0'>                    this.capcity += people.getWeight();</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>151</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l151s0'>                    passengers.add(people);</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>152</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l152s0'>                    ILOG.info("有人进电梯, 当前乘客数:{}, 重量:{}, floor:{}", passengers.size(), capcity, floor);</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>153</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l153s0'>                } catch (Exception e) {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>154</td><td>&nbsp;</td>
+      <td><pre class='comment'>                    // 已经进入电梯, 并发</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>155</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l155s0'>                    System.out.println("进入电梯异常, msg:" + e.getMessage());</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>156</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l156s0'>                }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>158</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l158s0'>                it.remove();</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>159</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>            }</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>160</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l160s0'>        }</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>161</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l161s0'>    }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'></td><td>&nbsp;</td>
+      <td class='comment' onclick='showHideLines(this)'><div>    /**
+     * 计算电梯到指定楼层的距离
+     * @param targetFloor
+     * @return
+     */</div><span>    /*...*/</span></td>
+    </tr>
+    <tr>
+      <td class='line'>168</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    public int distance(int targetFloor, boolean peopleDirection) {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>169</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>        <span id='l169s0' title='Executions: 0' class='uncovered'>if (floor > targetFloor)</span> <span id='l169s1' title='Executions: 0' class='uncovered'>{ // 电梯当前楼层比人楼层高</span></pre></td>
+    </tr>
+    <tr>
+      <td class='line'>170</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>            <span id='l170s0' title='Executions: 0' class='uncovered'>if(peopleDirection)</span> <span id='l170s1' title='Executions: 0' class='uncovered'>{ // 人想上</span></pre></td>
+    </tr>
+    <tr>
+      <td class='line'>171</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>                <span id='l171s0' title='Executions: 0' class='uncovered'>if (direction)</span> <span id='l171s1' title='Executions: 0' class='uncovered'>{ // 电梯向上</span></pre></td>
+    </tr>
+    <tr>
+      <td class='line'>172</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l172s0'>                    return totalFloor - floor + totalFloor - targetFloor;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>173</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>                } else { // 电梯向下,或静止</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>174</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l174s0'>                    return floor - targetFloor;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>175</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>                }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>177</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>            } else {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>178</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>                <span id='l178s0' title='Executions: 0' class='uncovered'>if(direction)</span> <span id='l178s1' title='Executions: 0' class='uncovered'>{</span></pre></td>
+    </tr>
+    <tr>
+      <td class='line'>179</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l179s0'>                    return totalFloor - floor + totalFloor - targetFloor;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>180</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>                } else {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>181</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l181s0'>                    return floor - targetFloor;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>182</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>                }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>184</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>            }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>186</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>        <span id='l186s0' title='Executions: 0' class='uncovered'>}</span> else <span id='l186s1' title='Executions: 0' class='uncovered'>if (floor &lt; targetFloor)</span> </pre></td>
+    </tr>
+    <tr>
+      <td class='line'>187</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>            <span id='l187s0' title='Executions: 0' class='uncovered'>if(peopleDirection)</span> <span id='l187s1' title='Executions: 0' class='uncovered'>{ // 人想上</span></pre></td>
+    </tr>
+    <tr>
+      <td class='line'>188</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>                <span id='l188s0' title='Executions: 0' class='uncovered'>if (!direction)</span> <span id='l188s1' title='Executions: 0' class='uncovered'>{</span></pre></td>
+    </tr>
+    <tr>
+      <td class='line'>189</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l189s0'>                    return floor + targetFloor;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>190</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>                } else {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>191</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l191s0'>                    return targetFloor - floor;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>192</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>                }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>194</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>            } else { // 人想下</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>195</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>                <span id='l195s0' title='Executions: 0' class='uncovered'>if(!direction)</span> <span id='l195s1' title='Executions: 0' class='uncovered'>{ // 电梯向下</span></pre></td>
+    </tr>
+    <tr>
+      <td class='line'>196</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l196s0'>                    return floor + targetFloor;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>197</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>                } else { // 电梯向上</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>198</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l198s0'>                    return targetFloor - floor;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>199</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>                }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>201</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>            }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>203</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>        } else { // 电梯当前楼层跟人楼层相同</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>204</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>            <span id='l204s0' title='Executions: 0' class='uncovered'>if(peopleDirection)</span> <span id='l204s1' title='Executions: 0' class='uncovered'>{</span></pre></td>
+    </tr>
+    <tr>
+      <td class='line'>205</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>                <span id='l205s0' title='Executions: 0' class='uncovered'>if(direction)</span> <span id='l205s1' title='Executions: 0' class='uncovered'>{</span></pre></td>
+    </tr>
+    <tr>
+      <td class='line'>206</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l206s0'>                    return 0;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>207</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>                } else {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>208</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l208s0'>                    return targetFloor + targetFloor;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>209</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>                }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>211</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>            } else {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>212</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>                <span id='l212s0' title='Executions: 0' class='uncovered'>if(!direction)</span> <span id='l212s1' title='Executions: 0' class='uncovered'>{</span></pre></td>
+    </tr>
+    <tr>
+      <td class='line'>213</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l213s0'>                    return 0;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>214</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>                } else {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>215</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l215s0'>                    return totalFloor - floor + totalFloor - floor;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>216</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>                }</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>217</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>            }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>219</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>        }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>221</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'></td><td>&nbsp;</td>
+      <td class='comment' onclick='showHideLines(this)'><div>    /**
+     * 请求电梯
+     */</div><span>    /*...*/</span></td>
+    </tr>
+    <tr>
+      <td class='line'>226</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    public void call(boolean direction, int callFloor) {</pre></td>
+    </tr>
+    <tr>
+      <td></td><td class='count'>0</td>
+      <td class='paths'>
+        <span style='cursor:default; background-color:#ff0000' onclick='hidePath()'>Path coverage: 0/2</span>
+        <span class='uncovered' onclick="showPath(this,'l227s0 l235s0')">A: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l227s0 l228s0 l235s0')">B: 0</span>
+      </td>
+    </tr>
+    <tr>
+      <td class='line'>227</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>        <span id='l227s0' title='Executions: 0' class='uncovered'>if(status == 0)</span> <span id='l227s1' title='Executions: 0' class='uncovered'>{ // 静态状态</span></pre></td>
+    </tr>
+    <tr>
+      <td class='line'>228</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l228s0'>            this.direction = direction;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>229</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l229s0'>            this.lastestCallFloor = callFloor;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>230</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l230s0'>            status = 1;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>231</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l231s0'>            ILOG.warn("[{}]被唤醒!!!", getName());</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>232</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>        } else {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>233</td><td>&nbsp;</td>
+      <td><pre class='comment'>            // 非静止状态, 就不能改变</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>234</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>        }</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>235</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l235s0'>    }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'></td><td>&nbsp;</td>
+      <td class='comment' onclick='showHideLines(this)'><div>    /**
+     * 每次移动一层
+     */</div><span>    /*...*/</span></td>
+    </tr>
+    <tr>
+      <td class='line'>240</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    public void move() {</pre></td>
+    </tr>
+    <tr>
+      <td></td><td class='count'>0</td>
+      <td class='paths'>
+        <span style='cursor:default; background-color:#ff0000' onclick='hidePath()'>Path coverage: 0/17</span>
+        <span class='uncovered' onclick="showPath(this,'l241s0 l241s1 l242s0 l245s0')">A: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l241s0 l248s0 l260s0 l266s0 l273s0 l277s0')">B: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l241s0 l248s0 l260s0 l266s0 l273s0 l274s0 l277s0')">C: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l241s0 l248s0 l260s0 l261s0 l273s0 l277s0')">D: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l241s0 l248s0 l260s0 l261s0 l273s0 l274s0 l277s0')">E: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l241s0 l248s0 l249s0 l255s0 l273s0 l277s0')">F: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l241s0 l248s0 l249s0 l255s0 l273s0 l274s0 l277s0')">G: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l241s0 l248s0 l249s0 l250s0 l273s0 l277s0')">H: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l241s0 l248s0 l249s0 l250s0 l273s0 l274s0 l277s0')">I: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l241s0 l241s1 l248s0 l260s0 l266s0 l273s0 l277s0')">J: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l241s0 l241s1 l248s0 l260s0 l266s0 l273s0 l274s0 l277s0')">K: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l241s0 l241s1 l248s0 l260s0 l261s0 l273s0 l277s0')">L: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l241s0 l241s1 l248s0 l260s0 l261s0 l273s0 l274s0 l277s0')">M: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l241s0 l241s1 l248s0 l249s0 l255s0 l273s0 l277s0')">N: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l241s0 l241s1 l248s0 l249s0 l255s0 l273s0 l274s0 l277s0')">O: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l241s0 l241s1 l248s0 l249s0 l250s0 l273s0 l277s0')">P: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l241s0 l241s1 l248s0 l249s0 l250s0 l273s0 l274s0 l277s0')">Q: 0</span>
+      </td>
+    </tr>
+    <tr>
+      <td class='line'>241</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>        <span id='l241s0' title='Executions: 0' class='uncovered'>if(lastestToFloor == floor</span> && <span id='l241s1' title='Executions: 0' class='uncovered'>passengers.isEmpty()) {</span></pre></td>
+    </tr>
+    <tr>
+      <td class='line'>242</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l242s0'>            status = 0;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>243</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l243s0'>            lastestToFloor = -1;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>244</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l244s0'>            ILOG.warn("[{}]电梯为空, 静止状态!!! floor:{}", getName(), floor);</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>245</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l245s0'>            return;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>246</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>        }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>248</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>        <span id='l248s0' title='Executions: 0' class='uncovered'>if(direction)</span> <span id='l248s1' title='Executions: 0' class='uncovered'>{</span></pre></td>
+    </tr>
+    <tr>
+      <td class='line'>249</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>            <span id='l249s0' title='Executions: 0' class='uncovered'>if(floor &lt; totalFloor)</span> <span id='l249s1' title='Executions: 0' class='uncovered'>{</span></pre></td>
+    </tr>
+    <tr>
+      <td class='line'>250</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l250s0'>                EdsUtils.sleep(speed * 1000);</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>251</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l251s0'>                floor++;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>252</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l252s0'>                ILOG.info("[{}]电梯向上移动..., floor:{}", getName(), floor);</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>254</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>            } else {// 电梯非空, 朝下运行</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>255</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l255s0'>                direction = false;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>256</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l256s0'>                ILOG.warn("[{}]电梯非空, 改变方向, 向下运行!!!", getName());</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>257</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>            }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>259</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>        } else {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>260</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>            <span id='l260s0' title='Executions: 0' class='uncovered'>if(floor > 1)</span> <span id='l260s1' title='Executions: 0' class='uncovered'>{</span></pre></td>
+    </tr>
+    <tr>
+      <td class='line'>261</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l261s0'>                EdsUtils.sleep(speed * 1000);</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>262</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l262s0'>                floor--;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>263</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l263s0'>                ILOG.info("[{}]电梯向下移动..., floor:{}", getName(), floor);</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>265</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>            } else {// 电梯非空, 朝上运行</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>266</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l266s0'>                direction = true;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>267</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l267s0'>                ILOG.warn("[{}]电梯非空, 改变方向, 向上运行!!!", getName());</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>269</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>            }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>271</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>        }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>273</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>        <span id='l273s0' title='Executions: 0' class='uncovered'>if(lastestCallFloor == floor)</span> <span id='l273s1' title='Executions: 0' class='uncovered'>{</span></pre></td>
+    </tr>
+    <tr>
+      <td class='line'>274</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l274s0'>            lastestCallFloor = -1;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>275</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>        }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>277</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l277s0'>    }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>279</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    public void setContext(DispatchSystem context) {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>280</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l280s0'>        this.context = context;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>281</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l281s0'>    }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>283</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    public int getSpeed() {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>284</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l284s0'>        return speed;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>285</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>287</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    public void setSpeed(int speed) {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>288</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l288s0'>        this.speed = speed;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>289</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l289s0'>    }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>291</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    public int getTotalFloor() {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>292</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l292s0'>        return totalFloor;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>293</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>295</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    public void setTotalFloor(int totalFloor) {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>296</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l296s0'>        this.totalFloor = totalFloor;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>297</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l297s0'>    }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>299</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    public int getCapcity() {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>300</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l300s0'>        return capcity;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>301</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>303</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    public void setCapcity(int capcity) {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>304</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l304s0'>        this.capcity = capcity;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>305</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l305s0'>    }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>307</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    public boolean isDirection() {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>308</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l308s0'>        return direction;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>309</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>311</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    public void setDirection(boolean direction) {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>312</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l312s0'>        this.direction = direction;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>313</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l313s0'>    }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>315</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    public int getFloor() {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>316</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l316s0'>        return floor;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>317</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>319</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    public void setFloor(int floor) {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>320</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l320s0'>        this.floor = floor;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>321</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l321s0'>    }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>323</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    public int getStatus() {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>324</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l324s0'>        return status;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>325</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>327</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    public void setStatus(int status) {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>328</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l328s0'>        this.status = status;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>329</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l329s0'>    }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>331</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    public int getLastestToFloor() {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>332</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l332s0'>        return lastestToFloor;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>333</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>335</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    public void setLastestToFloor(int lastestToFloor) {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>336</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l336s0'>        this.lastestToFloor = lastestToFloor;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>337</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l337s0'>    }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>339</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    public int getLastestCallFloor() {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>340</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l340s0'>        return lastestCallFloor;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>341</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>343</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    public void setLastestCallFloor(int lastestCallFloor) {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>344</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l344s0'>        this.lastestCallFloor = lastestCallFloor;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>345</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l345s0'>    }</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>346</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>}</pre></td>
+    </tr>
+  </table>
+</body>
+</html>

@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>JMockit Coverage Report - DispatchSystem.java</title>
+  <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
+  <link rel='stylesheet' type='text/css' href='../../../../coverage.css'/>
+  <link rel='shortcut icon' type='image/png' href='../../../../logo.png'/>
+  <script type='text/javascript' src='../../../../coverage.js'></script>
+  <script type='text/javascript' src='../../../../prettify.js'></script>
+</head>
+<body onload='prettyPrint()'>
+  <table cellpadding='0' cellspacing='1'>
+    <caption>study-rxjava/src/main/java/cm/study/rxjava/eds/DispatchSystem.java</caption>
+    <tr>
+      <td class='line'>1</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>package cm.study.rxjava.eds;</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'></td><td>&nbsp;</td>
+      <td><pre class='imports prettyprint' onclick='showHideLines(this)'><div>import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+</div><span>import ...</span></pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'></td><td>&nbsp;</td>
+      <td class='comment' onclick='showHideLines(this)'><div>/**
+ * 电梯调度系统
+ * 一栋大厦有N层楼, 现在有E部电梯
+ * 模拟电梯调度系统
+ *
+ * 对于人的行为有:
+ *  1) 站在电梯前, 选择上/下
+ *  2) 进入电梯后, 选择目的楼层
+ *
+ * 对于电梯行为有:
+ *  1) 根据当前的用户需求, 选择一台合适的电梯
+ *  2) 在指定合适的位置停下
+ *
+ * Created by chenming on 2017/2/26.
+ */</div><span>/*...*/</span></td>
+    </tr>
+    <tr>
+      <td class='line'>25</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>public class DispatchSystem implements Runnable {</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>27</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l27s0'>    private static final Logger ILOG = LoggerFactory.getLogger( DispatchSystem.class );</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>29</td><td>&nbsp;</td>
+      <td><pre class='comment'>    /** 总电梯台数 */</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>30</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    public static final int TOTAL_ELEVATORS = 3;</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>32</td><td>&nbsp;</td>
+      <td><pre class='comment'>    /** 总楼层 */</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>33</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    public static final int TOTAL_FLOORS = 7;</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>35</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l35s0'>    public static final Random RNAD = new Random();</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>37</td><td>&nbsp;</td>
+      <td><pre class='comment'>    /** 电梯 */</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>38</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    private List&lt;Elevator> <span class='instance uncovered' title='Reads: 0 Writes: 0'>elevators</span>;</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>40</td><td>&nbsp;</td>
+      <td><pre class='comment'>    /** 向上等待的人群队列 */</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>41</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l41s0'>    private volatile List&lt;People> <span class='instance uncovered' title='Reads: 0 Writes: 0'>up_wait_peoples</span> = new ArrayList&lt;>();</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>43</td><td>&nbsp;</td>
+      <td><pre class='comment'>    /** 向下等待的人群队列 */</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>44</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l44s0'>    private volatile List&lt;People> <span class='instance uncovered' title='Reads: 0 Writes: 0'>down_wait_peoples</span> = new ArrayList&lt;>();</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>46</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    public static void main(String[] args) {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>47</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l47s0'>        Thread system = new Thread(new DispatchSystem());</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>48</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l48s0'>        system.start();</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>50</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l50s0'>    }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'></td><td>&nbsp;</td>
+      <td class='comment' onclick='showHideLines(this)'><div>    /**
+     * 初始化电梯
+     */    <tr>
+      <td></td><td class='count'>0</td>
+      <td class='paths'>
+        <span style='cursor:default; background-color:#ff0000' onclick='hidePath()'>Path coverage: 0/2</span>
+        <span class='uncovered' onclick="showPath(this,'l55s0 l57s0 l64s0 l65s0')">A: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l55s0 l57s0 l58s0 l64s0 l65s0')">B: 0</span>
+      </td>
+    </tr>
+</div><span>    /*...*/</span></td>
+    </tr>
+    <tr>
+      <td class='line'>55</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l55s0'>    public DispatchSystem() {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>56</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l56s0'>        elevators = new ArrayList&lt;Elevator>();</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>57</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>        <span id='l57s0' title='Executions: 0' class='uncovered'>for(int index = 0; index &lt; TOTAL_ELEVATORS; index++)</span> <span id='l57s1' title='Executions: 0' class='uncovered'>{</span></pre></td>
+    </tr>
+    <tr>
+      <td class='line'>58</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l58s0'>            Elevator elevator = new Elevator("电梯_" + index,1, TOTAL_FLOORS);</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>59</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l59s0'>            elevator.setContext(this);</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>60</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l60s0'>            elevators.add(elevator);</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>61</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l61s0'>            elevator.start();</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>62</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>        }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>64</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l64s0'>        ILOG.info("初始化电梯完成...");</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>65</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l65s0'>    }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>67</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    @Override</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>68</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    public void run() {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>69</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>        for(;;) {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>70</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l70s0'>            comeOnPeopleEvent();</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>72</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l72s0'>            notifyElevator();</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>74</td><td>&nbsp;</td>
+      <td><pre class='comment'>            // 遍历</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>75</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l75s0'>            EdsUtils.sleep(1000);</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>76</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>        }</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>77</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>79</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    void comeOnPeopleEvent() {</pre></td>
+    </tr>
+    <tr>
+      <td></td><td class='count'>0</td>
+      <td class='paths'>
+        <span style='cursor:default; background-color:#ff0000' onclick='hidePath()'>Path coverage: 0/3</span>
+        <span class='uncovered' onclick="showPath(this,'l80s0 l94s0 l96s0')">A: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l80s0 l81s0 l83s0 l88s0 l93s0 l96s0')">B: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l80s0 l81s0 l83s0 l84s0 l93s0 l96s0')">C: 0</span>
+      </td>
+    </tr>
+    <tr>
+      <td class='line'>80</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>        <span id='l80s0' title='Executions: 0' class='uncovered'>if(RNAD.nextInt(100) &lt; 30)</span> <span id='l80s1' title='Executions: 0' class='uncovered'>{ // 30%概率来一个人</span></pre></td>
+    </tr>
+    <tr>
+      <td class='line'>81</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l81s0'>            People people = PeopleFactory.build(TOTAL_FLOORS);</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>82</td><td>&nbsp;</td>
+      <td><pre class='comment'>            // 选择一台电梯, 等候, 进电梯, 出电梯</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>83</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>            <span id='l83s0' title='Executions: 0' class='uncovered'>if(people.isUp()) { // 向上</span></pre></td>
+    </tr>
+    <tr>
+      <td class='line'>84</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l84s0'>                up_wait_peoples.add(people);</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>85</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l85s0'>                ILOG.info("来了一个向上的人:{}", people);</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>87</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>            } else { // 向上</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>88</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l88s0'>                down_wait_peoples.add(people);</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>89</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l89s0'>                ILOG.info("来了一个向下的人:{}", people);</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>91</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>            }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>93</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l93s0'>        } else {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>94</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l94s0'>            ILOG.debug("没有来人...");</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>95</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>        }</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>96</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l96s0'>    }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'></td><td>&nbsp;</td>
+      <td class='comment' onclick='showHideLines(this)'><div>    /**
+     * 通知电梯过来拉客
+     */</div><span>    /*...*/</span></td>
+    </tr>
+    <tr>
+      <td class='line'>101</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    void notifyElevator() {</pre></td>
+    </tr>
+    <tr>
+      <td></td><td class='count'>0</td>
+      <td class='paths'>
+        <span style='cursor:default; background-color:#ff0000' onclick='hidePath()'>Path coverage: 0/16</span>
+        <span class='uncovered' onclick="showPath(this,'l102s0 l109s0 l115s0')">A: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l102s0 l109s0 l109s1 l111s0 l114s0 l115s0')">B: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l102s0 l109s0 l109s1 l111s0 l112s0 l112s2 l112s3 l114s0 l115s0')">C: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l102s0 l109s0 l109s1 l111s0 l112s0 l112s1 l112s3 l114s0 l115s0')">D: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l102s0 l102s1 l104s0 l107s0 l109s0 l115s0')">E: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l102s0 l102s1 l104s0 l107s0 l109s0 l109s1 l111s0 l114s0 l115s0')">F: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l102s0 l102s1 l104s0 l107s0 l109s0 l109s1 l111s0 l112s0 l112s2 l112s3 l114s0 l115s0')">G: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l102s0 l102s1 l104s0 l107s0 l109s0 l109s1 l111s0 l112s0 l112s1 l112s3 l114s0 l115s0')">H: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l102s0 l102s1 l104s0 l105s0 l105s2 l105s3 l107s0 l109s0 l115s0')">I: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l102s0 l102s1 l104s0 l105s0 l105s2 l105s3 l107s0 l109s0 l109s1 l111s0 l114s0 l115s0')">J: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l102s0 l102s1 l104s0 l105s0 l105s2 l105s3 l107s0 l109s0 l109s1 l111s0 l112s0 l112s2 l112s3 l114s0 l115s0')">K: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l102s0 l102s1 l104s0 l105s0 l105s2 l105s3 l107s0 l109s0 l109s1 l111s0 l112s0 l112s1 l112s3 l114s0 l115s0')">L: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l102s0 l102s1 l104s0 l105s0 l105s1 l105s3 l107s0 l109s0 l115s0')">M: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l102s0 l102s1 l104s0 l105s0 l105s1 l105s3 l107s0 l109s0 l109s1 l111s0 l114s0 l115s0')">N: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l102s0 l102s1 l104s0 l105s0 l105s1 l105s3 l107s0 l109s0 l109s1 l111s0 l112s0 l112s2 l112s3 l114s0 l115s0')">O: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l102s0 l102s1 l104s0 l105s0 l105s1 l105s3 l107s0 l109s0 l109s1 l111s0 l112s0 l112s1 l112s3 l114s0 l115s0')">P: 0</span>
+      </td>
+    </tr>
+    <tr>
+      <td class='line'>102</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>        <span id='l102s0' title='Executions: 0' class='uncovered'>for(People people</span> : <span id='l102s1' title='Executions: 0' class='uncovered'>up_wait_peoples)</span> </pre></td>
+    </tr>
+    <tr>
+      <td class='line'>103</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l103s0'>            Elevator elevator = selectUpElevator(people.getStartFloor());</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>104</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>            <span id='l104s0' title='Executions: 0' class='uncovered'>if(null != elevator)</span> <span id='l104s1' title='Executions: 0' class='uncovered'>{</span></pre></td>
+    </tr>
+    <tr>
+      <td class='line'>105</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>                <span id='l105s0' title='Executions: 0' class='uncovered'>elevator.call(people.getStartFloor() &lt; elevator.getFloor()? false</span> : <span id='l105s1' title='Executions: 0' class='uncovered'>true, people.getStartFloor());</span></pre></td>
+    </tr>
+    <tr>
+      <td class='line'>106</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>            }</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>107</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l107s0'>        }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>109</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>        <span id='l109s0' title='Executions: 0' class='uncovered'>for(People people</span> : <span id='l109s1' title='Executions: 0' class='uncovered'>down_wait_peoples)</span> </pre></td>
+    </tr>
+    <tr>
+      <td class='line'>110</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l110s0'>            Elevator elevator = selectDownElevator(people.getStartFloor());</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>111</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>            <span id='l111s0' title='Executions: 0' class='uncovered'>if(null != elevator)</span> <span id='l111s1' title='Executions: 0' class='uncovered'>{</span></pre></td>
+    </tr>
+    <tr>
+      <td class='line'>112</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>                <span id='l112s0' title='Executions: 0' class='uncovered'>elevator.call(people.getStartFloor() &lt; elevator.getFloor()? false</span> : <span id='l112s1' title='Executions: 0' class='uncovered'>true, people.getStartFloor());</span></pre></td>
+    </tr>
+    <tr>
+      <td class='line'>113</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>            }</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>114</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l114s0'>        }</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>115</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l115s0'>    }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'></td><td>&nbsp;</td>
+      <td class='comment' onclick='showHideLines(this)'><div>    /**
+     * 选择一台向上的电梯
+     */</div><span>    /*...*/</span></td>
+    </tr>
+    <tr>
+      <td class='line'>120</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    Elevator selectUpElevator(int startFloor) {</pre></td>
+    </tr>
+    <tr>
+      <td></td><td class='count'>0</td>
+      <td class='paths'>
+        <span style='cursor:default; background-color:#ff0000' onclick='hidePath()'>Path coverage: 0/3</span>
+        <span class='uncovered' onclick="showPath(this,'l121s0 l124s0 l134s0')">A: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l121s0 l124s0 l124s1 l128s0 l132s0 l134s0')">B: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l121s0 l124s0 l124s1 l128s0 l129s0 l132s0 l134s0')">C: 0</span>
+      </td>
+    </tr>
+    <tr>
+      <td class='line'>121</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l121s0'>        Elevator rt = null;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>122</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l122s0'>        int minDist = TOTAL_FLOORS;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>123</td><td>&nbsp;</td>
+      <td><pre class='comment'>        // 比较所有电梯到指定目标楼层的距离</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>124</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>        <span id='l124s0' title='Executions: 0' class='uncovered'>for(Elevator elevator</span> : <span id='l124s1' title='Executions: 0' class='uncovered'>elevators)</span> </pre></td>
+    </tr>
+    <tr>
+      <td class='line'>125</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l125s0'>            int dist = elevator.distance(startFloor, true);</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>126</td><td>&nbsp;</td>
+      <td><pre class='comment'>//            ILOG.info("电梯[{}]向上运行到 {} 层的距离是: {}, 电梯当前状态是:{}, 方向:{}, 楼层:{}",</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>127</td><td>&nbsp;</td>
+      <td><pre class='comment'>//                    elevator.getName(), startFloor, dist, elevator.getStatus(), elevator.isDirection(), elevator.getFloor());</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>128</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>            <span id='l128s0' title='Executions: 0' class='uncovered'>if(dist &lt; minDist)</span> <span id='l128s1' title='Executions: 0' class='uncovered'>{</span></pre></td>
+    </tr>
+    <tr>
+      <td class='line'>129</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l129s0'>                rt = elevator;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>130</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l130s0'>                minDist = dist;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>131</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>            }</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>132</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l132s0'>        }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>134</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l134s0'>        return rt;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>135</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>137</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    Elevator selectDownElevator(int startFloor) {</pre></td>
+    </tr>
+    <tr>
+      <td></td><td class='count'>0</td>
+      <td class='paths'>
+        <span style='cursor:default; background-color:#ff0000' onclick='hidePath()'>Path coverage: 0/3</span>
+        <span class='uncovered' onclick="showPath(this,'l138s0 l141s0 l151s0')">A: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l138s0 l141s0 l141s1 l145s0 l149s0 l151s0')">B: 0</span>
+        <span class='uncovered' onclick="showPath(this,'l138s0 l141s0 l141s1 l145s0 l146s0 l149s0 l151s0')">C: 0</span>
+      </td>
+    </tr>
+    <tr>
+      <td class='line'>138</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l138s0'>        Elevator rt = null;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>139</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l139s0'>        int minDist = TOTAL_FLOORS;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>140</td><td>&nbsp;</td>
+      <td><pre class='comment'>        // 比较所有电梯到指定目标楼层的距离</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>141</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>        <span id='l141s0' title='Executions: 0' class='uncovered'>for(Elevator elevator</span> : <span id='l141s1' title='Executions: 0' class='uncovered'>elevators)</span> </pre></td>
+    </tr>
+    <tr>
+      <td class='line'>142</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l142s0'>            int dist = elevator.distance(startFloor, false);</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>143</td><td>&nbsp;</td>
+      <td><pre class='comment'>//            ILOG.info("电梯[{}]向下运行到 {} 层的距离是: {}, 电梯当前状态是:{}, 方向:{}, 楼层:{}",</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>144</td><td>&nbsp;</td>
+      <td><pre class='comment'>//                    elevator.getName(), startFloor, dist, elevator.getStatus(), elevator.isDirection(), elevator.getFloor());</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>145</td><td class='count'>0</td>
+      <td><pre class='prettyprint jmp'>            <span id='l145s0' title='Executions: 0' class='uncovered'>if(dist &lt; minDist)</span> <span id='l145s1' title='Executions: 0' class='uncovered'>{</span></pre></td>
+    </tr>
+    <tr>
+      <td class='line'>146</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l146s0'>                rt = elevator;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>147</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l147s0'>                minDist = dist;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>148</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>            }</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>149</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l149s0'>        }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>151</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l151s0'>        return rt;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>152</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>154</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    public List&lt;People> getUp_wait_peoples() {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>155</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l155s0'>        return up_wait_peoples;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>156</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>158</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    public void setUp_wait_peoples(List&lt;People> up_wait_peoples) {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>159</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l159s0'>        this.up_wait_peoples = up_wait_peoples;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>160</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l160s0'>    }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>162</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    public List&lt;People> getDown_wait_peoples() {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>163</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l163s0'>        return down_wait_peoples;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>164</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    }</pre></td>
+    </tr>
+    <tr><td class='line'></td><td colspan='2'>&nbsp;</td></tr>
+    <tr>
+      <td class='line'>166</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>    public void setDown_wait_peoples(List&lt;People> down_wait_peoples) {</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>167</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l167s0'>        this.down_wait_peoples = down_wait_peoples;</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>168</td><td class='count'>0</td>
+      <td><pre class='prettyprint uncovered' id='l168s0'>    }</pre></td>
+    </tr>
+    <tr>
+      <td class='line'>169</td><td>&nbsp;</td>
+      <td><pre class='prettyprint'>}</pre></td>
+    </tr>
+  </table>
+</body>
+</html>
