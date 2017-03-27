@@ -29,19 +29,17 @@ public class RedisCodecTest {
         people.setExt(exts);
 
         Pet dog = new Pet("二哈", 3.21f, 3);
+        dog.setFoods(new Long[]{123l, 345l, 567l});
         people.setPet(dog);
 
         String encode = RedisCodec.with(people).encode();
         System.out.println("-->" + encode);
 
-        String json = JSON.toJSON(people);
-        System.out.println("-->" + json);
-        System.out.println("rc length:"+encode.length()+", json length:" + json.length());
-
-//        List<String> fieldValues = RedisCodec.with(encode).splitTarget();
-//        System.out.println("-->" + fieldValues);
+//        String json = JSON.toJSON(people);
+//        System.out.println("-->" + json);
+//        System.out.println("rc length:"+encode.length()+", json length:" + json.length());
 //
-        People fromDecode = RedisCodec.with(encode).decode(People.class);
+        People fromDecode = RedisCodec.with(encode).decode(Arrays.asList(People.class));
         System.out.println("-->" + fromDecode);
 
     }
@@ -59,7 +57,7 @@ public class RedisCodecTest {
         People people = new People(123456, "cm", 30, 1.71, false);
         String encode = RedisCodec.with(people).encode();
 
-        People fromDecode = RedisCodec.with(encode).decode(People.class);
+        People fromDecode = RedisCodec.with(encode).decode(Arrays.asList(People.class));
         System.out.println("-->" + fromDecode);
     }
 }

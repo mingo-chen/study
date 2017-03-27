@@ -1,17 +1,11 @@
 package cm.study.common.codec;
 
-import com.sun.deploy.util.ReflectionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.lang.reflect.Type;
-import java.sql.Ref;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Redis编码
@@ -37,67 +31,80 @@ public class RedisCodec {
 
     /**
      * 把对象按redis编码进行编码
+     * 1) 如果是基本类型,则直接len(obj),obj.toString();
+     * 2) 如果是Array, len(...),len(ele1),ele1len(ele2),ele2...
+     * 3) 如果是Collection, len(...),len(ele1),ele1len(ele2),ele2...
+     * 4) 如果是Map, len(...),len(k1),k1len(v1),v1len(k2),k2len(v2),v2...
+     *
+     * 5) 如果是Bean, 则用反射获取Bean的每个Field, 然后根据Field的类型, 再走1~4步
      * @return
      */
     public String encode() throws CodecException {
         ILOG.info("目标对象:{}", target);
 
         if (this.target == null) {
-            return "";
+            return "0,"; // 按位置取的, 不能为空
         }
 
         StringBuilder sb = new StringBuilder();
 
         try {
-            // 考虑父类继承的字段
-            Field[] fields = target.getClass().getDeclaredFields();
-            for (Field field : fields) {
-                try {
-                    field.setAccessible(true);
-                    Object value = field.get(target);
+            Class<?> targetType = target.getClass();
 
-                    Class<?> fieldType = field.getType();
+            if(ReflectUtils.isPrimitive(targetType)) { // 基本类型
+                String text = ReflectUtils.toString(target);
+                sb.append(text.length()).append(",").append(text);
 
-                    if(fieldType.isArray()) {
-                        Object[] arrays = (Object[]) value;
-                        StringBuilder subSb = new StringBuilder();
-                        for(Object v : arrays) {
-                            String s_value = ReflectUtils.toString(v);
-                            subSb.append(s_value.length()).append(",").append(s_value);
-                        }
-                        sb.append(subSb.length()).append(",").append(subSb);
-
-                    } else if(fieldType == List.class) {
-                        List lists = (List) value;
-                        StringBuilder subSb = new StringBuilder();
-                        for(Object v : lists) {
-                            String s_value = ReflectUtils.toString(v);
-                            subSb.append(s_value.length()).append(",").append(s_value);
-                        }
-                        sb.append(subSb.length()).append(",").append(subSb);
-
-                    } else if(fieldType == Map.class) {
-                        Map map = (Map) value;
-                        StringBuilder subSb = new StringBuilder();
-                        for(Object k : map.keySet()) {
-                            Object v = map.get(k);
-                            String s_key = ReflectUtils.toString(k);
-                            String s_value = ReflectUtils.toString(v);
-
-                            subSb.append(s_key.length()).append(",").append(s_key);
-                            subSb.append(s_value.length()).append(",").append(s_value);
-                        }
-
-                        sb.append(subSb.length()).append(",").append(subSb);
-
-                    } else {
-                        String s_value = ReflectUtils.toString(value);
-                        sb.append(s_value.length()).append(",").append(s_value);
-                    }
-
-                } catch (IllegalAccessException iae) {
-                    throw new CodecException(iae);
+            } else if (targetType.isArray()) { // 数组类型
+                Object[] arrays = (Object[]) target;
+                StringBuilder subSb = new StringBuilder();
+                for(Object v : arrays) {
+                    String s_value = RedisCodec.with(v).encode();
+                    subSb.append(s_value);
                 }
+                sb.append(subSb.length()).append(",").append(subSb);
+
+            } else if(Collection.class.isAssignableFrom(targetType)) { // 集合
+                Collection lists = (Collection) target;
+                StringBuilder subSb = new StringBuilder();
+                for(Object v : lists) {
+                    String s_value = RedisCodec.with(v).encode();
+                    subSb.append(s_value);
+                }
+                sb.append(subSb.length()).append(",").append(subSb);
+
+            } else if(Map.class.isAssignableFrom(targetType)) { // Map
+                Map map = (Map) target;
+                StringBuilder subSb = new StringBuilder();
+                for(Object k : map.keySet()) {
+                    Object v = map.get(k);
+
+                    String s_key = RedisCodec.with(k).encode();
+                    String s_value = RedisCodec.with(v).encode();
+
+                    subSb.append(s_key);
+                    subSb.append(s_value);
+                }
+
+                sb.append(subSb.length()).append(",").append(subSb);
+
+            } else { // Object Bean
+                // 考虑父类继承的字段
+                StringBuilder subSb = new StringBuilder();
+                Field[] fields = target.getClass().getDeclaredFields();
+                for (Field field : fields) {
+                    try {
+                        field.setAccessible(true);
+                        Object fieldValue = field.get(target);
+
+                        String s_value = RedisCodec.with(fieldValue).encode();
+                        subSb.append(s_value);
+
+                    } catch (IllegalAccessException iae) {
+                        throw new CodecException(iae);
+                    }
+                }
+                sb.append(subSb.length()).append(",").append(subSb);
             }
         } catch (Exception e) {
             ILOG.error("reflect error", e);
@@ -110,81 +117,78 @@ public class RedisCodec {
      * 把对象按redis编码进行解码
      * @return
      */
-    public <T> T decode(Class<T> clazz) {
+    public <T> T decode(List<Class<?>> clazzss) {
+        if(clazzss == null || clazzss.isEmpty()) {
+            throw new RuntimeException("值类型为空");
+        }
+
         T result = null;
+        Class<T> clazz = (Class<T>) clazzss.get(0);
 
         try {
-            result = clazz.newInstance();
+            String text = getOriginalText((String)target);
 
-            List<String> valuePairs = splitTarget((String) target);
+            if(ReflectUtils.isPrimitive(clazz)) { // 基本类型
+                // 基本类型
+                return (T) ReflectUtils.fromString(text, clazz);
 
-            Field[] fields = clazz.getDeclaredFields();
-            if(fields.length == 0) { // 没有字段
-                return (T) getOriginalText(valuePairs.get(0));
+            } else if(clazz.isArray()) { // 数组类型
+                Class<?> fxType = clazz.getComponentType();
+                List<String> arrayValues = splitTarget(text);
 
-            } else {
-                for(int index = 0; index < fields.length; index++) {
-                    Field field = fields[index];
-                    field.setAccessible(true);
+                Object convertValues = Array.newInstance(fxType, arrayValues.size());
+                for (int idx = 0; idx < arrayValues.size(); idx++) {
+                    Object value = RedisCodec.with(arrayValues.get(idx)).decode(Arrays.asList(fxType));
+                    Array.set(convertValues, idx, value);
+                }
+                return (T) convertValues;
 
-                    String valuePair = valuePairs.get(index);
-                    int splitIndex = valuePair.indexOf(",");
-                    String s_fieldValue = valuePair.substring(splitIndex + 1);
+            } else if(Collection.class.isAssignableFrom(clazz)) { // 集合
+                Class<?> fxType = clazzss.size()>1? clazzss.get(1) : Object.class;
+                return RedisCodec.with(target).decodeCollection(clazz, fxType);
 
-                    Class<?> fieldType = field.getType();
+            } else if(Map.class.isAssignableFrom(clazz)) { // Map
+                Class<?> keyType = clazzss.size()>1? clazzss.get(1) : Object.class;
+                Class<?> valueType = clazzss.size()>2? clazzss.get(2) : Object.class;
 
-                    if (fieldType.isArray()) {
-                        Class<?> fxType = fieldType.getComponentType();
-                        List<String> arrayValues = splitTarget(s_fieldValue);
+                return RedisCodec.with(target).decodeMap(clazz, keyType, valueType);
 
-                        Object convertValues = Array.newInstance(fxType, arrayValues.size());
-                        for (int idx = 0; idx < arrayValues.size(); idx++) {
-                            String originValue = getOriginalText(arrayValues.get(idx));
-                            Object value = ReflectUtils.fromString(originValue, fxType);
-                            Array.set(convertValues, idx, value);
+            } else { // Object Bean
+                result = clazz.newInstance();
+                Field[] fields = clazz.getDeclaredFields();
+                if(fields.length == 0) { // 没有字段
+                    ILOG.error("对象没有字段: class:{}, target:{}", clazz.getName(), target);
+                    return (T) getOriginalText((String) target);
+
+                } else {
+                    List<String> valuePairs = splitTarget(getOriginalText((String) target));
+                    for (int index = 0; index < fields.length; index++) {
+                        Field field = fields[index];
+                        field.setAccessible(true);
+
+                        String valuePair = valuePairs.get(index);
+
+                        Class<?> fieldType = field.getType();
+                        Object value = null;
+                        if(Collection.class.isAssignableFrom(fieldType)) {
+                            value = RedisCodec.with(valuePair).decode(Arrays.asList(fieldType, ReflectUtils.getGenericType(field, 0)));
+
+                        } else if(Map.class.isAssignableFrom(fieldType)) {
+                            Class<?> keyType = ReflectUtils.getGenericType(field, 0);
+                            Class<?> valueType = ReflectUtils.getGenericType(field, 1);
+
+                            value = RedisCodec.with(valuePair).decode(Arrays.asList(fieldType, keyType, valueType));
+
+                        } else {
+                            value = RedisCodec.with(valuePair).decode(Arrays.asList(fieldType));
                         }
-                        field.set(result, convertValues);
 
-                    } else if (fieldType == List.class) {
-                        Class<?> fxType = ReflectUtils.getGenericType(field, 0);
-                        List<String> arrayValues = splitTarget(s_fieldValue);
-
-                        List convertValues = new ArrayList();
-                        for (int idx = 0; idx < arrayValues.size(); idx++) {
-                            String originValue = getOriginalText(arrayValues.get(idx));
-                            Object value = ReflectUtils.fromString(originValue, fxType);
-                            convertValues.add(value);
-                        }
-                        field.set(result, convertValues);
-
-                    } else if (fieldType == Map.class) {
-                        List<String> arrayValues = splitTarget(s_fieldValue);
-
-                        Class<?> keyType = ReflectUtils.getGenericType(field, 0);
-                        Class<?> valueType = ReflectUtils.getGenericType(field, 1);
-
-                        Map convertValues = new HashMap();
-                        for (int idx = 0; idx < arrayValues.size(); idx += 2) {
-                            String originalKeyText = getOriginalText(arrayValues.get(idx));
-                            String originalValueText = getOriginalText(arrayValues.get(idx + 1));
-
-                            Object key = ReflectUtils.fromString(originalKeyText, keyType);
-                            Object value = ReflectUtils.isSupport(valueType) ? ReflectUtils.fromString(originalValueText, valueType) :
-                                    (RedisCodec.with(arrayValues.get(idx + 1)).decode(valueType));
-                            convertValues.put(key, value);
-                        }
-                        field.set(result, convertValues);
-
-                    } else {
-//                        Object value = ReflectUtils.fromString(s_fieldValue, fieldType);
-                        Object value = ReflectUtils.isSupport(fieldType) ? ReflectUtils.fromString(s_fieldValue, fieldType) :
-                                (RedisCodec.with(s_fieldValue).decode(fieldType));
                         field.set(result, value);
                     }
                 }
-            }
 
-            return result;
+                return result;
+            }
 
         } catch (Exception e) {
             ILOG.error("反编码错误, clazz:" + clazz.getName() + ", target:" + target, e);
@@ -194,9 +198,31 @@ public class RedisCodec {
 
     }
 
-    List<String> splitTarget(String text) {
-//        = (String) target;
+    public <T> T decodeCollection(Class<?> collectionType, Class<?> elementType) {
+        List<String> arrayValues = splitTarget(getOriginalText((String)target));
 
+        List convertValues = new ArrayList();
+        for (int idx = 0; idx < arrayValues.size(); idx++) {
+            Object value = RedisCodec.with(arrayValues.get(idx)).decode(Arrays.asList(elementType));
+            convertValues.add(value);
+        }
+        return (T) convertValues;
+    }
+
+    public <T> T decodeMap(Class<?> mapType, Class<?> keyType, Class<?> valueType) {
+        List<String> arrayValues = splitTarget(getOriginalText((String)target));
+
+        Map convertValues = new HashMap();
+        for (int idx = 0; idx < arrayValues.size(); idx += 2) {
+            Object key = RedisCodec.with(arrayValues.get(idx)).decode(Arrays.asList(keyType));
+            Object value = RedisCodec.with(arrayValues.get(idx + 1)).decode(Arrays.asList(valueType));
+            convertValues.put(key, value);
+        }
+        return (T) convertValues;
+    }
+
+
+    List<String> splitTarget(String text) {
         int cursor = 0;
         List<String> result = new ArrayList<String>();
         for(;;) {

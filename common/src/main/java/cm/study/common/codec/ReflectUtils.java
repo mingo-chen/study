@@ -28,7 +28,12 @@ public class ReflectUtils {
         return (Class<?>)type2;
     }
 
-    public static boolean isSupport(Class<?> clazz) {
+//    public static Class<?> getGenericType(Type genericType, int index) {
+//        Type type2 = ((ParameterizedType) genericType).getActualTypeArguments()[index];
+//        return (Class<?>)type2;
+//    }
+
+    public static boolean isPrimitive(Class<?> clazz) {
         if(clazz.isPrimitive()) {  // 原生类型
             return true;
 
