@@ -26,11 +26,11 @@
 			<version>4.1.6.Final</version>
 		</dependency>
 
-		<dependency>
-			<groupId>com.meizu.kiev</groupId>
-			<artifactId>meizu-kiev</artifactId>
-			<version>2.2.0-RC01</version>
-		</dependency>
+		<!--<dependency>-->
+			<!--<groupId>com.meizu.kiev</groupId>-->
+			<!--<artifactId>meizu-kiev</artifactId>-->
+			<!--<version>2.2.0-RC01</version>-->
+		<!--</dependency>-->
     </dependencies>
 
 </project>
