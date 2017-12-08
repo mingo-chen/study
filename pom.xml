@@ -20,11 +20,13 @@
 
     <modules>
         <module>common</module>
+        <module>study-java</module>
         <module>study-netty</module>
         <module>study-rxjava</module>
         <module>study-akka</module>
         <module>study-clojure</module>
         <module>study-scala</module>
+        <module>study-bigdata</module>
     </modules>
 
 
