@@ -2,7 +2,9 @@ package cm.study.java.stream;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 public class StreamExample {
 
@@ -30,9 +32,15 @@ public class StreamExample {
         names.forEach(System.out::println);
     }
 
+    public static void sdy_stream() {
+        Optional<String> element = Stream.of("ljx", "cm").findFirst();
+        System.out.println(element.get());
+    }
+
     public static void main(String[] args) {
-        sdy_lambda();
-        
+//        sdy_lambda();
+
+        sdy_stream();
     }
 
 }
