@@ -14,6 +14,7 @@ import java.util.concurrent.Executors;
 /**
  * 一个SocketServer实例
  * 接收客户端命令, 解析成CacheStore里的对应方法及参数
+ * 每个客户端连接一个线程, 服务端比较消耗资源
  */
 public class RedisServer {
 
@@ -115,7 +116,7 @@ public class RedisServer {
         });
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         new RedisServer().start();
     }
 }
