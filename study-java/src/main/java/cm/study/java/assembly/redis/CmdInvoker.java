@@ -14,7 +14,7 @@ public class CmdInvoker {
     public static Object call(String[] cmdInfo, CacheStore store) {
         String cmdName = cmdInfo[0];
 
-        if(StringUtils.equalsIgnoreCase(cmdName, "get")) {
+        if(StringUtils.equalsIgnoreCase(cmdName, "search")) {
             if(cmdInfo.length == 2) {
                 return store.get(cmdInfo[1]);
             } else {

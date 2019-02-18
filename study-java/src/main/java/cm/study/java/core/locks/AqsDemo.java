@@ -17,7 +17,7 @@ public class AqsDemo extends AbstractQueuedSynchronizer {
     @Override
     protected boolean tryAcquire(int arg) {
 //        boolean acq = count++ % 2 == 0;
-//        ILOG.info("get acq: {}", acq);
+//        ILOG.info("search acq: {}", acq);
 //        return acq;
         return false;
     }

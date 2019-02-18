@@ -14,7 +14,7 @@ public class ThreadDemo {
                 try {
 
                 } catch (Exception ie) {
-                    ILOG.error("get exception:", ie);
+                    ILOG.error("search exception:", ie);
                     isRun = false;
                 }
             }

@@ -50,7 +50,7 @@ public class SyncStudy2 implements SyncTask {
         for(int n = 0; n < times; ) {
             lock.lock();
             try {
-                ILOG.debug("{} get lock, signal: {}, is match: {}", jobId, signal, StringUtils.equals(signal, jobId));
+                ILOG.debug("{} search lock, signal: {}, is match: {}", jobId, signal, StringUtils.equals(signal, jobId));
                 if(StringUtils.equals(signal, jobId)) {
 //                System.out.printf("[%d]:%s\n", n, "C");
                     output.add(jobId);

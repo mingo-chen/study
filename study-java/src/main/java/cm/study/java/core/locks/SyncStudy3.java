@@ -48,7 +48,7 @@ public class SyncStudy3 implements SyncTask {
     void say(String jobId, String nextJobId) {
         for(int n = 0; n < times; ) {
             String signal = signalRef.get();
-            ILOG.debug("{} get lock, signal: {}, is match: {}", jobId, signal, StringUtils.equals(signal, jobId));
+            ILOG.debug("{} search lock, signal: {}, is match: {}", jobId, signal, StringUtils.equals(signal, jobId));
             if (StringUtils.equals(signal, jobId)) {
                 output.add(jobId);
                 signalRef.compareAndSet(jobId, nextJobId);
