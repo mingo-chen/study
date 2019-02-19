@@ -9,7 +9,6 @@
 
 	<properties>
         <onepiece.version>1.0.0-SNAPSHOT</onepiece.version>
-
         <spring.version>3.2.3.RELEASE</spring.version>
     </properties>
 
@@ -22,6 +21,7 @@
         <module>study-clojure</module>
         <module>study-scala</module>
         <module>study-bigdata</module>
+        <module>study-zk</module>
     </modules>
 
 

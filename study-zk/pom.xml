@@ -1,0 +1,47 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+        <groupId>cm.study</groupId>
+		<artifactId>onepiece</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+
+	<groupId>cm.study</groupId>
+	<artifactId>onepiece-zk</artifactId>
+	<version>${onepiece.version}</version>
+	<packaging>jar</packaging>
+
+    <dependencies>
+		<dependency>
+			<groupId>cm.study</groupId>
+			<artifactId>onepiece-common</artifactId>
+			<version>${onepiece.version}</version>
+		</dependency>
+
+        <!--
+        根据curator 官网提示http://curator.apache.org/zk-compatibility.html
+
+        ZooKeeper 3.5.x
+            Curator 4.0 has a hard dependency on ZooKeeper 3.5.x
+            If you are using ZooKeeper 3.5.x there's nothing additional to do - just use Curator 4.0
+
+        ZooKeeper 3.4.x
+            Curator 4.0 supports ZooKeeper 3.4.x ensembles in a soft-compatibility mode.
+            To use this mode you must exclude ZooKeeper when adding Curator to your dependency management tool.
+        -->
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-recipes</artifactId>
+            <!--<version>2.9.0</version>-->
+            <version>4.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.zookeeper</groupId>
+            <artifactId>zookeeper</artifactId>
+            <version>3.4.9</version>
+        </dependency>
+    </dependencies>
+
+</project>
