@@ -1,0 +1,65 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+        <groupId>cm.study</groupId>
+		<artifactId>onepiece-dubbo</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+
+	<groupId>cm.study</groupId>
+	<artifactId>greet-consumer</artifactId>
+	<version>${greet.consumer.version}</version>
+	<packaging>jar</packaging>
+
+	<properties>
+	</properties>
+
+    <dependencies>
+		<dependency>
+			<groupId>cm.study</groupId>
+			<artifactId>onepiece-common</artifactId>
+			<version>${onepiece.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>cm.study</groupId>
+			<artifactId>greet-interface</artifactId>
+			<version>${greet.interface.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.curator</groupId>
+			<artifactId>curator-recipes</artifactId>
+			<version>4.0.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.zookeeper</groupId>
+			<artifactId>zookeeper</artifactId>
+			<version>3.4.9</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.dubbo</groupId>
+			<artifactId>dubbo-rpc-dubbo</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.dubbo</groupId>
+			<artifactId>dubbo-registry-zookeeper</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.dubbo</groupId>
+			<artifactId>dubbo-configcenter-zookeeper</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.dubbo</groupId>
+			<artifactId>dubbo-remoting-netty4</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.dubbo</groupId>
+			<artifactId>dubbo-serialization-hessian2</artifactId>
+		</dependency>
+	</dependencies>
+
+</project>

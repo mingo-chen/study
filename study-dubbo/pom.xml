@@ -1,0 +1,93 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+        <groupId>cm.study</groupId>
+		<artifactId>onepiece</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+
+	<groupId>cm.study</groupId>
+	<artifactId>onepiece-dubbo</artifactId>
+	<version>${onepiece.version}</version>
+	<packaging>pom</packaging>
+
+	<properties>
+		<dubbo.version>2.7.0</dubbo.version>
+		<greet.interface.version>1.0.0</greet.interface.version>
+		<greet.provider.version>1.0.0</greet.provider.version>
+		<greet.consumer.version>1.0.0</greet.consumer.version>
+	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.apache.dubbo</groupId>
+				<artifactId>dubbo-registry-zookeeper</artifactId>
+				<version>${dubbo.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.dubbo</groupId>
+				<artifactId>dubbo-registry-multicast</artifactId>
+				<version>${dubbo.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.dubbo</groupId>
+				<artifactId>dubbo-rpc-dubbo</artifactId>
+				<version>${dubbo.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.dubbo</groupId>
+				<artifactId>dubbo-remoting-netty4</artifactId>
+				<version>${dubbo.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.dubbo</groupId>
+				<artifactId>dubbo-serialization-hessian2</artifactId>
+				<version>${dubbo.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.dubbo</groupId>
+				<artifactId>dubbo-configcenter-zookeeper</artifactId>
+				<version>${dubbo.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.dubbo</groupId>
+				<artifactId>dubbo-metadata-report-zookeeper</artifactId>
+				<version>${dubbo.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.dubbo</groupId>
+				<artifactId>dubbo-metadata-report-redis</artifactId>
+				<version>${dubbo.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.dubbo</groupId>
+				<artifactId>dubbo-qos</artifactId>
+				<version>${dubbo.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+    <dependencies>
+		<dependency>
+			<groupId>cm.study</groupId>
+			<artifactId>onepiece-common</artifactId>
+			<version>${onepiece.version}</version>
+		</dependency>
+
+		<!--<dependency>-->
+			<!--<groupId>org.apache.dubbo</groupId>-->
+			<!--<artifactId>dubbo-bom</artifactId>-->
+			<!--<version>2.7.0</version>-->
+		<!--</dependency>-->
+
+    </dependencies>
+
+	<modules>
+		<module>greet-interface</module>
+		<module>greet-provider</module>
+		<module>greet-consumer</module>
+	</modules>
+
+</project>

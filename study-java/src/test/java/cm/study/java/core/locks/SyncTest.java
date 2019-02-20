@@ -1,12 +1,8 @@
 package cm.study.java.core.locks;
 
-import com.sun.corba.se.impl.orbutil.concurrent.Sync;
-import com.sun.tools.corba.se.idl.constExpr.Times;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
-
-import static org.testng.Assert.*;
 
 public class SyncTest {
 

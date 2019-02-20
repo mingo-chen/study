@@ -22,6 +22,7 @@
         <module>study-scala</module>
         <module>study-bigdata</module>
         <module>study-zk</module>
+        <module>study-dubbo</module>
     </modules>
 
 
