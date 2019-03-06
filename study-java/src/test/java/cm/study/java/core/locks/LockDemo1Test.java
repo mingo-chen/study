@@ -57,20 +57,5 @@ public class LockDemo1Test {
         readThread2.start();
         readThread3.start();
 
-//        new Thread(new Runnable() {
-//
-//            @Override
-//            public void run() {
-//                long start = System.currentTimeMillis();
-//                for (; ; ) {
-//                    if (System.currentTimeMillis() - start > 5000) {
-//                        System.out.println("不等了, 尝试中断...");
-//                        readThread1.interrupt();
-//                        break;
-//                    }
-//                }
-//            }
-//        }).start();
-
     }
 }
