@@ -42,25 +42,26 @@ public class ByteBufferStudy {
     public byte[] char2byte2(char ch) {
         byte[] bts;
         if (ch <= 0x7F) {
+
             byte bt0 = (byte) (ch & 0x7F);
             bts = new byte[]{bt0};
 
         } else if (ch <= 0x7FF) {
-            byte bt0 = (byte) (1 << 7 + ch & 0x3F);
-            byte bt1 = (byte) (1 << 7 + 1 << 6 + ch >> 6);
+            byte bt0 = (byte) (ch & 0x3F | 0x80);
+            byte bt1 = (byte) ((ch >> 6) | 0xC0);
             bts = new byte[]{bt1, bt0};
 
         } else if (ch <= 0xFFFF) {
-            byte bt0 = (byte) ((ch & 0x3F) + (1 << 7));
-            byte bt1 = (byte) (((ch >> 6) & 0x3F) + (1 << 7));
-            byte bt2 = (byte) ((1 << 7) + (1 << 6) + (1 << 5) + (ch >> 12));
+            byte bt0 = (byte) (ch & 0x3F | 0x80);
+            byte bt1 = (byte) ((ch >> 6) & 0x3F | 0x80);
+            byte bt2 = (byte) ((ch >> 12) | 0xE0);
             bts = new byte[]{bt2, bt1, bt0};
 
         } else if (ch <= 0x10FFFF) {
-            byte bt0 = (byte) (1 << 7 + ch & 0x3F);
-            byte bt1 = (byte) (1 << 7 + (ch >> 6) & 0x3F);
-            byte bt2 = (byte) (1 << 7 + (ch >> 12) & 0x3F);
-            byte bt3 = (byte) (1 << 7 + 1 << 6 + 1 << 5 + 1 << 4 + ch >> 18);
+            byte bt0 = (byte) (ch & 0x3F | 0x80);
+            byte bt1 = (byte) ((ch >> 6) & 0x3F | 0x80);
+            byte bt2 = (byte) ((ch >> 12) & 0x3F | 0x80);
+            byte bt3 = (byte) ((ch >> 18) | 0xF0);
             bts = new byte[]{bt3, bt2, bt1, bt0};
         } else {
             bts = new byte[0];
