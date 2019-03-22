@@ -1,14 +1,12 @@
 package cm.study.asm.proxy;
 
+import cm.study.asm.common.ReflectUtil;
 import cm.study.asm.demo.AsmClassLoader;
 import org.apache.commons.lang3.StringUtils;
 import org.objectweb.asm.*;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.net.URL;
 
 public class ProxyByAsm {
 
@@ -21,35 +19,23 @@ public class ProxyByAsm {
     public Object wrapper() {
         try {
             Class<?> clazz = instance.getClass();
-            String className = StringUtils.replace(clazz.getName(), ".", "/") + "Dynamic";
-            ClassWriter writer = _genClazz(clazz, className);
+            String className = clazz.getName() + "Dynamic";
+            System.out.println("===> " + className);
+            ClassWriter writer = _genClazz(clazz, StringUtils.replace(className, ".", "/"));
 
-            String path = "/Users/ahcming/workspace/github/study/study-asm/target/classes";
-            output(writer, path, className);
-
-            Object proxy = checkAndGet(path, className);
+            Object proxy = checkAndGet(writer.toByteArray(), className);
             return proxy;
 
         } catch (Exception e) {
             e.printStackTrace();
             return instance;
         }
-
     }
 
-    public void output(ClassWriter clazzWriter, String path, String className) throws Exception {
-        byte[] clazzData = clazzWriter.toByteArray();
-
-        File source = new File(path + "/" + className + ".class");
-        FileOutputStream out = new FileOutputStream(source);
-        out.write(clazzData);
-        out.close();
-    }
-
-    Object checkAndGet(String path, String className) throws Exception {
-        URL sourceUrl = new URL("file:" + path);
-        AsmClassLoader loader = new AsmClassLoader(new URL[]{sourceUrl});
-        Class<?> realClazz = loader.findClass(StringUtils.replace(className, "/", "."));
+    Object checkAndGet(byte[] clazzData, String className) throws Exception {
+//        URL sourceUrl = new URL("file:" + path);
+        AsmClassLoader loader = new AsmClassLoader(clazzData, className);
+        Class<?> realClazz = loader.findClass(className);
         System.out.println("output --> " + realClazz);
         Method[] methods = realClazz.getDeclaredMethods();
         for (Method method : methods) {
@@ -83,6 +69,9 @@ public class ProxyByAsm {
         constructor.visitEnd();
 
         for (Method method : clazz.getDeclaredMethods()) {
+            int stacks = 0;  // load了多少个变量
+            int locals = 0;  // 本地变量有多少个, 包含返回值
+
             String desc = getMethodDesc(method);
             String signature = null;
             String[] exceptions = null;
@@ -96,17 +85,38 @@ public class ProxyByAsm {
 
             // real invoke
             visitor.visitVarInsn(Opcodes.ALOAD, 0);
+            locals++;
+            stacks++;
             visitor.visitFieldInsn(Opcodes.GETFIELD, className, "target", Type.getDescriptor(clazz));
-            visitor.visitVarInsn(Opcodes.ALOAD, 1);
+            Class<?>[] paramTypes = method.getParameterTypes();
+            for(int idx = 0; idx < paramTypes.length; idx++) {
+                Class<?> type = paramTypes[idx];
+                visitor.visitVarInsn(ReflectUtil.getLoadFlag(type), idx+1);
+                locals++;
+                stacks++;
+            }
+
             visitor.visitMethodInsn(Opcodes.INVOKEVIRTUAL, ReflectUtil.typeToString(clazz), method.getName(), desc, false);
+
+            if (method.getReturnType() != void.class) {
+                visitor.visitVarInsn(ReflectUtil.getStoreFlag(method.getReturnType()), paramTypes.length+1);
+                locals++;
+            }
 
             // after real invoke
             visitor.visitFieldInsn(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
             visitor.visitLdcInsn("start clean work...");
             visitor.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
-            visitor.visitInsn(Opcodes.RETURN);
 
-            visitor.visitMaxs(3, 2);
+            if (method.getReturnType() != void.class) {
+                visitor.visitVarInsn(ReflectUtil.getLoadFlag(method.getReturnType()), paramTypes.length+1);
+                visitor.visitInsn(ReflectUtil.getReturnFlag(method.getReturnType()));
+
+            } else {
+                visitor.visitInsn(Opcodes.RETURN);
+            }
+
+            visitor.visitMaxs(stacks, locals);
             visitor.visitEnd();
         }
 
@@ -120,12 +130,6 @@ public class ProxyByAsm {
         for(int idx = 0; idx < method.getParameterTypes().length; idx++) {
             Class<?> clazz = method.getParameterTypes()[idx];
             sb.append(ReflectUtil.getShortName(clazz));
-
-            if (idx == method.getParameterTypes().length - 1) {
-                sb.append(";");
-            } else {
-                sb.append(",");
-            }
         }
 
         sb.append(")");

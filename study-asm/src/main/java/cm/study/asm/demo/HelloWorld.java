@@ -38,18 +38,7 @@ public class HelloWorld {
 
         byte[] clazzData = clazzWriter.toByteArray();
         try {
-            File source = new File("/Users/ahcming/workspace/github/study/study-asm/target/classes/cm/HelloX$A.class");
-            FileOutputStream out = new FileOutputStream(source);
-            out.write(clazzData);
-            out.close();
-
-            URL sourceUrl = new URL("file:/Users/ahcming/workspace/github/study/study-asm/target/classes");
-//            URL sourceUrl = source.toURI().toURL();
-            AsmClassLoader loader = new AsmClassLoader(new URL[]{sourceUrl});
-            for(URL url : loader.getURLs()) {
-                System.out.println("url: " + url);
-            }
-
+            AsmClassLoader loader = new AsmClassLoader(clazzData, "cm.HelloX$A");
             Class<?> realClazz = loader.findClass("cm.HelloX$A");
             System.out.println("----> " + realClazz);
             Method[] methods = realClazz.getMethods();

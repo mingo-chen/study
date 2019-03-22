@@ -13,22 +13,22 @@ public class AsmClassLoaderTest {
 
     @Test
     public void testFindClass() throws Exception {
-        URL url = new URL("file:/tmp/cm");
+//        URL url = new URL("file:/tmp/cm");
 //        URL url = new URL("file:/Users/ahcming/workspace/github/study/study-asm/target/classes/cm");
 
-        AsmClassLoader classLoader = new AsmClassLoader(new URL[]{url});
-        Class<?> clazz = classLoader.findClass("cm.study.asm.demo.HelloWorld");
-        System.out.println("--> " + clazz);
+//        AsmClassLoader classLoader = new AsmClassLoader(new URL[]{url});
+//        Class<?> clazz = classLoader.findClass("cm.study.asm.demo.HelloWorld");
+//        System.out.println("--> " + clazz);
     }
 
     @Test
     public void testFindClass2() throws Exception {
-        URL url = new URL("file:/Users/ahcming/workspace/github/study/study-asm/target/test-classes");
-        InputStream input = url.openStream();
-        System.out.println("==> " + IOUtils.readLines(input));
-
-        AsmClassLoader classLoader = new AsmClassLoader(new URL[]{url});
-        Class<?> clazz = classLoader.findClass("cm.study.asm.demo.HelloTest");
-        System.out.println("--> " + clazz);
+//        URL url = new URL("file:/Users/ahcming/workspace/github/study/study-asm/target/test-classes");
+//        InputStream input = url.openStream();
+//        System.out.println("==> " + IOUtils.readLines(input));
+//
+//        AsmClassLoader classLoader = new AsmClassLoader(new URL[]{url});
+//        Class<?> clazz = classLoader.findClass("cm.study.asm.demo.HelloTest");
+//        System.out.println("--> " + clazz);
     }
 }
