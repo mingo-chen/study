@@ -25,6 +25,7 @@
         <module>study-dubbo</module>
         <module>study-rocketmq</module>
         <module>study-asm</module>
+        <module>study-springboot</module>
     </modules>
 
 
