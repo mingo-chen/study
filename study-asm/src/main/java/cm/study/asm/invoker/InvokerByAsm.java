@@ -144,8 +144,6 @@ public class InvokerByAsm {
         localVars.add(ReflectUtil.typeToString(FormInvocation.class));
 
         for (Method method : methods) {
-            // if && size == method.getParameterTypes {
-            // target
             if (nextBlock == null) {
                 nextBlock = new Label();
                 mv.visitLabel(nextBlock);
@@ -162,7 +160,6 @@ public class InvokerByAsm {
                 } else {
                     mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
                 }
-
             }
 
             {
@@ -183,7 +180,6 @@ public class InvokerByAsm {
                 mv.visitInsn(Opcodes.ICONST_0 + method.getParameterTypes().length); // 最多支持6个参数的方法重载
                 mv.visitJumpInsn(Opcodes.IF_ICMPNE, nextBlock);
 
-//                localVars.add(ReflectUtil.typeToString(int.class));
                 localVars.add(Opcodes.INTEGER);
             }
 
@@ -241,7 +237,6 @@ public class InvokerByAsm {
                     mv.visitInsn(Opcodes.ARETURN);
                 }
             }
-
         }
 
         {
