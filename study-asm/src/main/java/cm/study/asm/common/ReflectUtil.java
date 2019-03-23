@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.objectweb.asm.Opcodes;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,6 +14,9 @@ public class ReflectUtil {
     public static Map<Class<?>, Integer> typeLoadCode = new HashMap<>();
     public static Map<Class<?>, Integer> typeStoreCode = new HashMap<>();
     public static Map<Class<?>, Integer> typeReturnCode = new HashMap<>();
+    public static Map<Class<?>, Method> primitiveUnwrapMethod = new HashMap<>();
+    public static Map<Class<?>, Method> primitiveWrapMethod = new HashMap<>();
+    public static Map<Class<?>, Class<?>> primitive2WrapType = new HashMap<>();
 
     static {
         typeShortName.put(boolean.class, "Z");
@@ -48,6 +52,34 @@ public class ReflectUtil {
         typeReturnCode.put(long.class, Opcodes.LRETURN);
         typeReturnCode.put(float.class, Opcodes.FRETURN);
         typeReturnCode.put(double.class, Opcodes.DRETURN);
+
+        try {
+            primitive2WrapType.put(boolean.class, Boolean.class);
+            primitive2WrapType.put(byte.class, Byte.class);
+            primitive2WrapType.put(short.class, Short.class);
+            primitive2WrapType.put(int.class, Integer.class);
+            primitive2WrapType.put(long.class, Long.class);
+            primitive2WrapType.put(float.class, Float.class);
+            primitive2WrapType.put(double.class, Double.class);
+
+            primitiveWrapMethod.put(boolean.class, Boolean.class.getMethod("valueOf", boolean.class));
+            primitiveWrapMethod.put(byte.class, Byte.class.getMethod("valueOf", byte.class));
+            primitiveWrapMethod.put(short.class, Short.class.getMethod("valueOf", short.class));
+            primitiveWrapMethod.put(int.class, Integer.class.getMethod("valueOf", int.class));
+            primitiveWrapMethod.put(long.class, Long.class.getMethod("valueOf", long.class));
+            primitiveWrapMethod.put(float.class, Float.class.getMethod("valueOf", float.class));
+            primitiveWrapMethod.put(double.class, Double.class.getMethod("valueOf", double.class));
+
+            primitiveUnwrapMethod.put(boolean.class, Boolean.class.getMethod("booleanValue"));
+            primitiveUnwrapMethod.put(byte.class, Byte.class.getMethod("byteValue"));
+            primitiveUnwrapMethod.put(short.class, Short.class.getMethod("shortValue"));
+            primitiveUnwrapMethod.put(int.class, Integer.class.getMethod("intValue"));
+            primitiveUnwrapMethod.put(long.class, Long.class.getMethod("longValue"));
+            primitiveUnwrapMethod.put(float.class, Float.class.getMethod("floatValue"));
+            primitiveUnwrapMethod.put(double.class, Double.class.getMethod("doubleValue"));
+        } catch (Exception e) {
+
+        }
     }
 
     public static String getShortName(Class<?> type) {
@@ -66,7 +98,11 @@ public class ReflectUtil {
     }
 
     public static String typeToString(Class<?> type) {
-        return StringUtils.replace(type.getName(), ".", "/");
+        if(type.isPrimitive()) {
+            return typeShortName.get(type);
+        } else {
+            return StringUtils.replace(type.getName(), ".", "/");
+        }
     }
 
     public static Object getValue(String value, Class<?> type) {
@@ -104,5 +140,22 @@ public class ReflectUtil {
         } else {
             return Opcodes.ARETURN;
         }
+    }
+
+    public static Method getUnwrapMethod(Class<?> primitive) {
+        return primitiveUnwrapMethod.get(primitive);
+    }
+
+    public static Class<?> getWrapType(Class<?> primitive) {
+        Class<?> wrapType = primitive2WrapType.get(primitive);
+        if (wrapType == null) {
+            throw new RuntimeException("[" + primitive.getName() + "] not config...");
+        }
+
+        return wrapType;
+    }
+
+    public static Method getWrapMethod(Class<?> primitive) {
+        return primitiveWrapMethod.get(primitive);
     }
 }

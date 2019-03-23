@@ -32,24 +32,14 @@ public class InvokerTargetByReflect implements Invoker {
     public Object call(Invocation invocation) {
         FormInvocation form = (FormInvocation) invocation;
 
-        String methodId = String.format("%s_%d", form.getName(), form.size());
+        String methodId = String.format("%s_%d", form.getMethodName(), form.size());
         Method method = methodMap.get(methodId);
         if (null == method) {
             throw new RuntimeException("method not exist!");
         }
 
-        Map<String, String> params = form.gets();
-        Class<?>[] types = method.getParameterTypes();
-        int idx = 0;
-
-        Object[] args = new Object[params.size()];
-        for (Map.Entry<String, String> entry : params.entrySet()) {
-            args[idx] = ReflectUtil.getValue(entry.getValue(), types[idx]);
-            idx++;
-        }
-
         try {
-            return method.invoke(target, args);
+            return method.invoke(target, form.getParams());
         } catch (Exception e) {
             throw new RuntimeException("method invoke error");
         }

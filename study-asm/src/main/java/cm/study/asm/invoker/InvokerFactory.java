@@ -14,7 +14,8 @@ public class InvokerFactory {
      */
     public static void scan(Class<?> type, Object instance) {
 //        invokerMap.put(type, new InvokerTargetByHard((Target) instance));
-        invokerMap.put(type, new InvokerTargetByReflect((Target) instance));
+//        invokerMap.put(type, new InvokerTargetByReflect((Target) instance));
+        invokerMap.put(type, new InvokerByAsm().wrapper(instance));
     }
 
     public static Invoker get(Class<?> clazz) {

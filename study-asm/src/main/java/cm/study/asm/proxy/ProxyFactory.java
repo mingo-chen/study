@@ -16,9 +16,9 @@ public class ProxyFactory {
 
         System.out.println("\n=============\n");
 
-        proxy.doSomething("A", "Mz", 16, 1000);
+//        proxy.doSomething("A", "Mz", 16, 1000);
 
-        System.out.println("\n=============\n");
+//        System.out.println("\n=============\n");
 
         proxy.otherThing("B", "VO");
     }

@@ -16,8 +16,8 @@ public class UseCase {
     public static void testDoSomething1() {
         Invoker invoker = InvokerFactory.get(Target.class);
         FormInvocation invocation = new FormInvocation();
-        invocation.setName("doSomething");
-        invocation.with("id", "1234");
+        invocation.setMethodName("doSomething");
+        invocation.with("1234");
 
         Object result = invoker.call(invocation);
         System.out.println("result " + result);
@@ -26,10 +26,8 @@ public class UseCase {
     public static void testDoSomething3() {
         Invoker invoker = InvokerFactory.get(Target.class);
         FormInvocation invocation = new FormInvocation();
-        invocation.setName("doSomething");
-        invocation.with("id", "1234");
-        invocation.with("name", "xxxx");
-        invocation.with("age", "30");
+        invocation.setMethodName("doSomething");
+        invocation.with("1234", "xxxx", 30, 128);
 
         Object result = invoker.call(invocation);
         System.out.println("result " + result);
@@ -38,9 +36,8 @@ public class UseCase {
     public static void testOtherThing() {
         Invoker invoker = InvokerFactory.get(Target.class);
         FormInvocation invocation = new FormInvocation();
-        invocation.setName("otherThing");
-        invocation.with("id", "1234");
-        invocation.with("name", "xxxx");
+        invocation.setMethodName("otherThing");
+        invocation.with("1234", "xxxx");
 
         Object result = invoker.call(invocation);
         System.out.println("result " + result);
@@ -49,9 +46,8 @@ public class UseCase {
     public static void testNotExist() {
         Invoker invoker = InvokerFactory.get(Target.class);
         FormInvocation invocation = new FormInvocation();
-        invocation.setName("notExistMethod");
-        invocation.with("id", "1234");
-        invocation.with("name", "xxxx");
+        invocation.setMethodName("notExistMethod");
+        invocation.with("1234", "xxxx");
 
         Object result = invoker.call(invocation);
         System.out.println("result " + result);

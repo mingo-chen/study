@@ -1,43 +1,61 @@
 package cm.study.asm.invoker;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Arrays;
 
 public class FormInvocation implements Invocation {
 
-    private String name;
+    private String apiName;
 
-    private Map<String, String> params = new LinkedHashMap<>();
+    private String methodName;
 
-    public String getName() {
-        return name;
+    private Object[] params;
+
+    public String getApiName() {
+        return apiName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setApiName(String apiName) {
+        this.apiName = apiName;
     }
 
-    public void with(String key, String value) {
-        params.put(key, value);
+    public String getMethodName() {
+        return methodName;
+    }
+
+    public void setMethodName(String methodName) {
+        this.methodName = methodName;
+    }
+
+    public Object[] getParams() {
+        return params;
+    }
+
+    public void setParams(Object[] params) {
+        this.params = params;
+    }
+
+    public void with(Object... args) {
+        params = args;
     }
 
     public int size() {
-        return params.size();
+        if (this.params == null) {
+            return 0;
+        } else {
+            return this.params.length;
+        }
     }
 
-    public String get(String key) {
-        return params.get(key);
-    }
-
-    public Map<String, String> gets() {
-        return params;
+    public <T> T get(int index) {
+        return (T) this.params[index];
     }
 
     @Override
     public String toString() {
         return "FormInvocation{" +
-               "name='" + name + '\'' +
-               ", params=" + params +
+               "apiName='" + apiName + '\'' +
+               ", methodName='" + methodName + '\'' +
+               ", params=" + Arrays.toString(params) +
                '}';
     }
 }

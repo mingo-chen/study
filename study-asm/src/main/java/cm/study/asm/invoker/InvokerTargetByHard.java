@@ -16,28 +16,24 @@ public class InvokerTargetByHard implements Invoker {
 
     @Override
     public Object call(Invocation invocation) {
-        FormInvocation form = (FormInvocation) invocation;
+        FormInvocation form = (FormInvocation) invocation;  // L0
+        String methodName = form.getMethodName();           // L1
+        int size = form.size();                             // L2
 
-        if(form.getName().equals("doSomething")) {
-            if(form.size() == 1) {
-                return target.doSomething(form.get("id"));
-            } else if (form.size() == 3) {
-                return target.doSomething(form.get("id"), form.get("name"),
-                        Integer.valueOf(form.get("age")), Integer.valueOf(form.get("size")));
-            } else {
-                throw new RuntimeException("method not exist!");
-            }
-
-        } else if (form.getName().equals("otherThing")) {
-            if (form.size() == 2) {
-                target.otherThing(form.get("id"), form.get("name"));
-                return null;
-
-            } else {
-                throw new RuntimeException("method not exist!");
-            }
-        } else{
-            throw new RuntimeException("method not exist!");
+        if (methodName.equals("doSomething") && size == 4) { // L4
+            return target.doSomething(form.get(0), form.get(1), form.get(2), form.get(3));
         }
+
+        if(methodName.equals("doSomething") && size == 1) { // L3
+            return target.doSomething(form.get(0));
+        }
+
+        if (methodName.equals("otherThing") && size == 2) {
+            target.otherThing(form.get(0), form.get(1));
+            return null;
+        }
+
+        throw new RuntimeException("method not exist!");
+
     }
 }
