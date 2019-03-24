@@ -10,6 +10,10 @@
 	<properties>
         <onepiece.version>1.0.0-SNAPSHOT</onepiece.version>
         <spring.version>3.2.3.RELEASE</spring.version>
+        <spring.boot.version>2.0.6.RELEASE</spring.boot.version>
+        <spring.cloud.version>2.0.4.RELEASE</spring.cloud.version>
+
+        <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
     </properties>
 
     <modules>
@@ -27,7 +31,6 @@
         <module>study-asm</module>
         <module>study-springboot</module>
     </modules>
-
 
     <dependencies>
         <!--<dependency>-->
@@ -80,6 +83,34 @@
 
     </dependencies>
 
+    <dependencyManagement>
+        <!-- Spring Boot 依赖 -->
+        <dependencies>
+            <dependency>
+                <groupId>cm.study</groupId>
+                <artifactId>onepiece-common</artifactId>
+                <version>${onepiece.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring.boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- Spring Cloud 依赖 -->
+            <!--<dependency>-->
+                <!--<groupId>org.springframework.cloud</groupId>-->
+                <!--<artifactId>spring-cloud-dependencies</artifactId>-->
+                <!--<version>${spring.cloud.version}</version>-->
+                <!--<type>pom</type>-->
+                <!--<scope>import</scope>-->
+            <!--</dependency>-->
+        </dependencies>
+    </dependencyManagement>
+
     <build>
         <plugins>
             <plugin>
@@ -100,7 +131,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.6.1</version>
+                <version>${maven-compiler-plugin.version}</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>

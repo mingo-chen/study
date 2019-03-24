@@ -12,36 +12,73 @@
 	<version>${onepiece.version}</version>
 	<packaging>jar</packaging>
 
+	<properties>
+		<!--<start-class>cm.study.springboot.Starter</start-class>-->
+	</properties>
+
     <dependencies>
 		<dependency>
 			<groupId>cm.study</groupId>
 			<artifactId>onepiece-common</artifactId>
-			<version>${onepiece.version}</version>
 		</dependency>
 
 		<!-- 添加模块相关依赖 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+		</dependency>
 
 		<dependency>
-			<groupId>org.openjdk.jmh</groupId>
-			<artifactId>jmh-core</artifactId>
-			<version>1.19</version>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
 		</dependency>
+
 		<dependency>
-			<groupId>org.openjdk.jmh</groupId>
-			<artifactId>jmh-generator-annprocess</artifactId>
-			<version>1.19</version>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<!-- swagger2 -->
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger2</artifactId>
+			<version>2.9.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger-ui</artifactId>
+			<version>2.9.2</version>
+		</dependency>
+
+		<!--<dependency>-->
+			<!--<groupId>org.openjdk.jmh</groupId>-->
+			<!--<artifactId>jmh-core</artifactId>-->
+			<!--<version>1.19</version>-->
+		<!--</dependency>-->
+		<!--<dependency>-->
+			<!--<groupId>org.openjdk.jmh</groupId>-->
+			<!--<artifactId>jmh-generator-annprocess</artifactId>-->
+			<!--<version>1.19</version>-->
+		<!--</dependency>-->
     </dependencies>
 
 	<build>
 		<plugins>
 			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.6.1</version>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>${spring.boot.version}</version>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-					<encoding>UTF-8</encoding>
+					<arguments>
+						<argument>--server.port=8888</argument>
+					</arguments>
 				</configuration>
 			</plugin>
 		</plugins>

@@ -17,7 +17,6 @@
 		<dependency>
 			<groupId>cm.study</groupId>
 			<artifactId>onepiece-common</artifactId>
-			<version>${onepiece.version}</version>
 		</dependency>
 
 		<dependency>
