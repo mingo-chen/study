@@ -54,6 +54,32 @@ public class AsmSetterTest {
     }
 
     @Test
+    public void testPayload_2() {
+        AnyBean anyBean = new AnyBean();
+        Map<String, Object> data = new HashMap<>();
+        data.put("id", 1234L);
+        data.put("name", "cm");
+        data.put("age", 30);
+
+        new AsmSetter<AnyBean>().payload(anyBean, data);
+
+        System.out.println("---> " + anyBean);
+    }
+
+    @Test
+    public void testRawPayload_2() {
+        AnyBean anyBean = new AnyBean();
+        Map<String, String> data = new HashMap<>();
+        data.put("id", "1234");
+        data.put("name", "cm");
+        data.put("age", "30");
+
+        new AsmSetter<AnyBean>().rawPayload(anyBean, data);
+
+        System.out.println("---> " + anyBean);
+    }
+
+    @Test
     public void test_byteCode() {
         Class<?> fieldType = long.class;
         String descriptor = Type.getMethodDescriptor(Type.getType(void.class), Type.getType(fieldType));

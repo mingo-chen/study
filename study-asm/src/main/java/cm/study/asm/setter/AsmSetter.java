@@ -1,7 +1,6 @@
 package cm.study.asm.setter;
 
 import cm.study.asm.common.AsmKit;
-import cm.study.asm.common.ReflectUtil;
 import cm.study.asm.demo.AsmClassLoader;
 import org.objectweb.asm.*;
 import org.slf4j.Logger;
@@ -172,7 +171,7 @@ public class AsmSetter<T> implements Setter<T> {
                 }
 
                 // invoke set method
-                String methodName = ReflectUtil.getSetterMethodName(entry.getKey());
+                String methodName = Reflects.genSetterMethodName(entry.getKey());
                 String descriptor = Type.getMethodDescriptor(Type.getType(void.class), Type.getType(fieldType));
                 mv.visitMethodInsn(INVOKEVIRTUAL, Type.getInternalName(type), methodName, descriptor, false);
             }
@@ -263,7 +262,7 @@ public class AsmSetter<T> implements Setter<T> {
                 AsmKit.cast(mv, fieldType);
 
                 // invoke set method
-                String methodName = ReflectUtil.getSetterMethodName(entry.getKey());
+                String methodName = Reflects.genSetterMethodName(entry.getKey());
                 String descriptor = Type.getMethodDescriptor(Type.getType(void.class), Type.getType(fieldType));
                 mv.visitMethodInsn(INVOKEVIRTUAL, Type.getInternalName(type), methodName, descriptor, false);
             }
