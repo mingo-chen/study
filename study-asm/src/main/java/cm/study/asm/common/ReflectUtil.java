@@ -158,4 +158,18 @@ public class ReflectUtil {
     public static Method getWrapMethod(Class<?> primitive) {
         return primitiveWrapMethod.get(primitive);
     }
+
+    public static String getSetterMethodName(String fieldName) {
+        StringBuilder sb = new StringBuilder("set");
+        char firstChar = fieldName.charAt(0);
+        if(firstChar >= 'a' && firstChar <= 'z') {
+            // 首字母变大小, 其它不变
+            sb.append((char) (firstChar - 32)).append(fieldName.substring(1));
+
+        } else {
+            sb.append(fieldName);
+        }
+
+        return sb.toString();
+    }
 }

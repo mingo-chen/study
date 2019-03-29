@@ -8,10 +8,9 @@
 	</parent>
 
 	<groupId>cm.study</groupId>
-	<artifactId>onepiece-java</artifactId>
+	<artifactId>onepiece-store</artifactId>
 	<version>${onepiece.version}</version>
 	<packaging>jar</packaging>
-
 
     <dependencies>
 		<dependency>
@@ -20,16 +19,27 @@
 			<version>${onepiece.version}</version>
 		</dependency>
 
+		<!-- 添加模块相关依赖 -->
 		<dependency>
-			<groupId>commons-codec</groupId>
-			<artifactId>commons-codec</artifactId>
-			<version>1.10</version>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis</artifactId>
+			<version>3.5.0</version>
 		</dependency>
 
 		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>8.0.11</version>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.5</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
 		</dependency>
 
 		<dependency>

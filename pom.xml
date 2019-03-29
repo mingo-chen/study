@@ -30,6 +30,7 @@
         <module>study-rocketmq</module>
         <module>study-asm</module>
         <module>study-springboot</module>
+        <module>study-store</module>
     </modules>
 
     <dependencies>
